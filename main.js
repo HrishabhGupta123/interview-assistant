@@ -56,7 +56,11 @@ function createWindow() {
   });
 
   mainWindow.setAlwaysOnTop(true, 'screen-saver');
+  mainWindow.setContentProtection(true);
+  mainWindow.setSkipTaskbar(true); // Hide from taskbar at bottom
+  mainWindow.isProtected = true;
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
+
 
   geminiView = new BrowserView({
     webPreferences: {
@@ -95,36 +99,37 @@ function createWindow() {
     }
   });
 
-  try {
-    const iconPath = path.join(__dirname, 'assets', 'icon.ico');
-    tray = new Tray(iconPath);
-    tray.setToolTip('Interview Assistant');
-    tray.setContextMenu(Menu.buildFromTemplate([
-      { label: 'Show Window', click: () => { mainWindow.show(); mainWindow.focus(); } },
-      { label: 'Hide Window', click: () => mainWindow.hide() },
-      { type: 'separator' },
-      { label: 'Exit', click: () => app.quit() },
-    ]));
-  } catch (e) {
-    console.warn('Tray icon creation failed:', e.message);
-  }
-
   mainWindow.on('closed', () => {
     mainWindow = null;
     geminiView = null;
   });
 }
 
-function toggleStealth() {
+function toggleShowWindow() {
   if (!mainWindow) return;
-  const isVisible = mainWindow.isVisible();
-  if (isVisible) {
+  if (mainWindow.isVisible()) {
     mainWindow.hide();
-    if (mainWindow.webContents) mainWindow.webContents.send('stealth-changed', false);
   } else {
     mainWindow.show();
     mainWindow.focus();
-    if (mainWindow.webContents) mainWindow.webContents.send('stealth-changed', true);
+    mainWindow.setAlwaysOnTop(true, 'screen-saver');
+  }
+}
+
+function toggleStealth() {
+  if (!mainWindow) return;
+  const isProtected = mainWindow.isProtected || false;
+  const nextProtection = !isProtected;
+  mainWindow.isProtected = nextProtection;
+
+  // 1. Windows Screen Capture Protection (Invisible to OBS, Zoom, Teams, Mirroring)
+  mainWindow.setContentProtection(nextProtection);
+
+  // 2. Hide icon from Windows Taskbar at the bottom
+  mainWindow.setSkipTaskbar(nextProtection);
+
+  if (mainWindow.webContents) {
+    mainWindow.webContents.send('stealth-changed', nextProtection);
   }
 }
 
@@ -133,16 +138,20 @@ function toggleClickThrough() {
   const currentIgnore = mainWindow.isClickThrough || false;
   const nextIgnore    = !currentIgnore;
   mainWindow.isClickThrough = nextIgnore;
+  
   mainWindow.setIgnoreMouseEvents(nextIgnore, { forward: true });
+
   if (mainWindow.webContents) {
     mainWindow.webContents.send('click-through-changed', nextIgnore);
   }
 }
 
+
 app.whenReady().then(() => {
   createWindow();
 
   globalShortcut.register('Alt+X', toggleStealth);
+  globalShortcut.register('Alt+Shift+G', toggleShowWindow);
   globalShortcut.register('Alt+C', toggleClickThrough);
 
   globalShortcut.register('Ctrl+Shift+M', () => {
@@ -151,6 +160,7 @@ app.whenReady().then(() => {
     }
   });
 });
+
 
 ipcMain.on('send-to-gemini', (event, text) => {
   if (!geminiView) return;
