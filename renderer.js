@@ -334,14 +334,15 @@
 
   if (btnClearData && confirmModal) {
     btnClearData.addEventListener('click', () => {
-      confirmModal.style.display = 'flex';
+      confirmModal.classList.add('active');
       window.electronAPI.showConfirmModal(); // Hides BrowserView so modal shows above!
     });
 
     const closeModal = () => {
-      confirmModal.style.display = 'none';
+      confirmModal.classList.remove('active');
       window.electronAPI.hideConfirmModal(); // Restores BrowserView!
     };
+
 
     modalCancel && modalCancel.addEventListener('click', closeModal);
 

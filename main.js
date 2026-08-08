@@ -325,6 +325,11 @@ ipcMain.on('hide-confirm-modal', () => {
 });
 
 ipcMain.on('clear-all-data', async () => {
+  if (geminiView && geminiView.webContents) {
+    try {
+      await geminiView.webContents.loadURL('about:blank');
+    } catch (e) {}
+  }
   if (geminiSession) {
     try {
       await geminiSession.clearStorageData();
@@ -339,6 +344,7 @@ ipcMain.on('clear-all-data', async () => {
     mainWindow.webContents.send('data-cleared');
   }
 });
+
 
 
 
