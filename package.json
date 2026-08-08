@@ -30,7 +30,7 @@
     "afterPack": "build/afterPack.js",
     "publish": {
       "provider": "github",
-      "owner": "hrishabhguptapip",
+      "owner": "HrishabhGupta123",
       "repo": "interview-assistant"
     },
     "win": {
@@ -46,7 +46,7 @@
       "signAndEditExecutable": false
     },
     "nsisWeb": {
-      "appPackageUrl": "https://github.com/hrishabhguptapip/interview-assistant/releases/download/v1.0.0/",
+      "appPackageUrl": "https://github.com/HrishabhGupta123/interview-assistant/releases/download/v1.0.0/",
       "oneClick": false,
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
