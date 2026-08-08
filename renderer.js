@@ -160,12 +160,11 @@
   // Detect Web Click Mic vs App Mic Button Click
   window.electronAPI.onMicStarted && window.electronAPI.onMicStarted(() => {
     if (!isAppMicTriggered) {
-      // Turned ON by direct web click inside Gemini
       if (isRecording) pauseAppVad();
-      setStatus('recording', 'Ready', 0); // Red dot indicator + simple Ready status
+      setStatus('web-mic', 'Unavailable', 0); // 🔴 Red Dot + Unavailable label
       if (micBtn) {
         micBtn.style.pointerEvents = 'none';
-        micBtn.style.opacity = '0.5';
+        micBtn.style.opacity = '0.5'; // Blur & lock mic button
       }
     }
   });
@@ -174,10 +173,11 @@
     isAppMicTriggered = false;
     if (micBtn) {
       micBtn.style.pointerEvents = '';
-      micBtn.style.opacity = '1';
+      micBtn.style.opacity = '1'; // Un-blur & unlock mic button
     }
-    setStatus('', 'Ready');
+    setStatus('', 'Ready'); // 🟢 Green Dot + Ready label
   });
+
 
 
 
