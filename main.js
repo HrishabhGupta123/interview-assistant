@@ -315,30 +315,39 @@ ipcMain.on('reload-gemini', () => {
 });
 
 ipcMain.on('show-confirm-modal', () => {
-  if (geminiView) {
-    geminiView.setBounds({ x: 0, y: 0, width: 0, height: 0 }); // Hides BrowserView so dark modal renders on top!
+  if (mainWindow && geminiView) {
+    try {
+      mainWindow.removeBrowserView(geminiView);
+    } catch (e) {}
   }
 });
 
 ipcMain.on('hide-confirm-modal', () => {
-  updateBrowserViewBounds(); // Restores BrowserView!
+  if (mainWindow && geminiView) {
+    try {
+      mainWindow.addBrowserView(geminiView);
+      updateBrowserViewBounds();
+    } catch (e) {}
+  }
 });
 
 ipcMain.on('clear-all-data', async () => {
-  if (geminiView && geminiView.webContents) {
+  try {
+    if (geminiSession) {
+      await geminiSession.clearStorageData({
+        storages: ['cookies', 'localstorage', 'serviceworkers', 'cachestorage', 'indexdb']
+      }).catch(err => console.error(err));
+      await geminiSession.clearCache().catch(err => console.error(err));
+    }
+  } catch (e) {
+    console.error('Clear data error:', e);
+  }
+  if (mainWindow && geminiView) {
     try {
-      await geminiView.webContents.loadURL('about:blank');
+      mainWindow.addBrowserView(geminiView);
+      updateBrowserViewBounds();
     } catch (e) {}
   }
-  if (geminiSession) {
-    try {
-      await geminiSession.clearStorageData();
-      await geminiSession.clearCache();
-    } catch (e) {
-      console.error('Clear data error:', e);
-    }
-  }
-  updateBrowserViewBounds();
   reloadGemini();
   if (mainWindow && mainWindow.webContents) {
     mainWindow.webContents.send('data-cleared');

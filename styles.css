@@ -378,10 +378,11 @@ html, body {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease;
+  -webkit-app-region: no-drag !important;
 }
 .modal-overlay.active {
   opacity: 1;
-  pointer-events: auto;
+  pointer-events: auto !important;
 }
 .modal-card {
   width: 300px;
@@ -395,6 +396,8 @@ html, body {
   align-items: center;
   gap: 12px;
   text-align: center;
+  -webkit-app-region: no-drag !important;
+  pointer-events: auto !important;
 }
 .modal-icon {
   font-size: 26px;
