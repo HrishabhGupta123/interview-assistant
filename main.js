@@ -3,6 +3,7 @@ const {
   ipcMain, screen, Menu, Tray, session, dialog, nativeImage
 } = require('electron');
 const path = require('path');
+const { autoUpdater } = require('electron-updater');
 
 app.setAppUserModelId('com.hrishabhgupta.interviewassistant');
 
@@ -10,6 +11,29 @@ let mainWindow  = null;
 let geminiView  = null;
 let tray        = null;
 let geminiSession = null;
+
+function setupAutoUpdater() {
+  autoUpdater.autoDownload = true;
+  autoUpdater.autoInstallOnAppQuit = true;
+
+  autoUpdater.on('update-available', () => {
+    if (mainWindow && mainWindow.webContents) {
+      mainWindow.webContents.send('status-update', 'Downloading Update...');
+    }
+  });
+
+  autoUpdater.on('update-downloaded', () => {
+    if (mainWindow && mainWindow.webContents) {
+      mainWindow.webContents.send('status-update', 'Update Ready! Restart App');
+    }
+  });
+
+  if (!process.defaultApp) {
+    setTimeout(() => {
+      autoUpdater.checkForUpdatesAndNotify().catch(() => {});
+    }, 6000);
+  }
+}
 
 function setupPermissions(sess) {
   sess.setPermissionRequestHandler((webContents, permission, callback) => {
@@ -280,6 +304,7 @@ app.whenReady().then(() => {
     app.setAppUserModelId('com.interviewassistant.app');
   }
   createWindow();
+  setupAutoUpdater();
 
 
   globalShortcut.register('Alt+Z', toggleStealth);        // Mode 1: Stealth Mode

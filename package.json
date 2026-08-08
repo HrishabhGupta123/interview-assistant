@@ -28,6 +28,11 @@
       "icon.png"
     ],
     "afterPack": "build/afterPack.js",
+    "publish": {
+      "provider": "github",
+      "owner": "hrishabhguptapip",
+      "repo": "interview-assistant"
+    },
     "win": {
       "target": [
         {
@@ -79,6 +84,7 @@
     }
   },
   "dependencies": {
+    "electron-updater": "^6.8.9",
     "koffi": "^2.16.3"
   },
   "devDependencies": {
