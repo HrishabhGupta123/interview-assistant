@@ -39,3 +39,10 @@ FunctionEnd
 !macro customPageAfterChangeDir
   Page custom SelectTasksPageShow SelectTasksPageLeave
 !macroend
+
+!macro customInstall
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_GUID}" "DisplayIcon" "$INSTDIR\Interview Assistant.exe,0"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_GUID}" "DisplayIcon" "$INSTDIR\Interview Assistant.exe,0"
+  CreateShortCut "$DESKTOP\Interview Assistant.lnk" "$INSTDIR\Interview Assistant.exe" "" "$INSTDIR\Interview Assistant.exe" 0
+  CreateShortCut "$SMPROGRAMS\Interview Assistant.lnk" "$INSTDIR\Interview Assistant.exe" "" "$INSTDIR\Interview Assistant.exe" 0
+!macroend

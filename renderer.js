@@ -294,8 +294,12 @@
     updateTooltipsForClickThrough(clickThrough);
   });
 
-  // ONLY Click-Through, Mic, and Close buttons stay interactive when Click-Through is ON
-  const interactiveBtns = [btnClickThru, micBtn, btnClose].filter(Boolean);
+  // All toolbar controls stay interactive
+  const interactiveBtns = [
+    btnClose, btnMinimize, btnMaximize,
+    btnStealth, btnClickThru, btnReload, btnClearData,
+    opacitySlider, micBtn, searchSend, searchInput
+  ].filter(Boolean);
   interactiveBtns.forEach(btn => {
     btn.addEventListener('mouseenter', () => {
       if (clickThrough) window.electronAPI.setIgnoreMouseEvents(false);
@@ -328,37 +332,6 @@
     window.electronAPI.setOpacity(parseFloat(opacitySlider.value) / 100);
   });
 
-  // ── Clear All Data Confirmation Modal ──────────────────────────────────────
-  const btnClearData = document.getElementById('btn-clear-data');
-  const confirmModal = document.getElementById('confirm-modal');
-  const modalCancel  = document.getElementById('modal-cancel');
-  const modalConfirm = document.getElementById('modal-confirm');
-
-  if (btnClearData && confirmModal) {
-    btnClearData.addEventListener('click', () => {
-      confirmModal.classList.add('active');
-      window.electronAPI.showConfirmModal(); // Hides BrowserView so modal shows above!
-    });
-
-    const closeModal = () => {
-      confirmModal.classList.remove('active');
-      window.electronAPI.hideConfirmModal(); // Restores BrowserView!
-    };
-
-
-    modalCancel && modalCancel.addEventListener('click', closeModal);
-
-    modalConfirm && modalConfirm.addEventListener('click', () => {
-      closeModal();
-      setStatus('sending', 'Clearing data…');
-      window.electronAPI.clearAllData();
-    });
-  }
-
-  window.electronAPI.onDataCleared && window.electronAPI.onDataCleared(() => {
-    setStatus('', 'Data Cleared!');
-    setTimeout(() => setStatus('', 'Ready'), 2500);
-  });
-
 })();
+
 

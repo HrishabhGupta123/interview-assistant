@@ -13,7 +13,6 @@
     "appId": "com.interviewassistant.app",
     "productName": "Interview Assistant",
     "copyright": "Copyright © 2026 Hrishabh Gupta. All rights reserved.",
-
     "asar": true,
     "directories": {
       "output": "dist"
@@ -24,8 +23,11 @@
       "index.html",
       "renderer.js",
       "styles.css",
-      "assets/**"
+      "assets/**",
+      "icon.ico",
+      "icon.png"
     ],
+    "afterPack": "build/afterPack.js",
     "win": {
       "target": [
         {
@@ -41,16 +43,10 @@
     "nsisWeb": {
       "appPackageUrl": "https://github.com/hrishabhguptapip/interview-assistant/releases/download/v1.0.0/",
       "oneClick": false,
-      "allowToChangeInstallationDirectory": true
-    },
-    "nsis": {
-
-      "oneClick": false,
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
       "allowElevation": true,
       "warningsAsErrors": false,
-
       "createDesktopShortcut": "always",
       "createStartMenuShortcut": true,
       "shortcutName": "Interview Assistant",
@@ -60,24 +56,35 @@
       "installerSidebar": "assets/installerSidebar.bmp",
       "uninstallerSidebar": "assets/installerSidebar.bmp",
       "license": "LICENSE.txt",
-
+      "include": "build/installer.nsh",
+      "deleteAppDataOnUninstall": true
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "allowElevation": true,
+      "warningsAsErrors": false,
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "shortcutName": "Interview Assistant",
+      "installerIcon": "icon.ico",
+      "installerHeaderIcon": "icon.ico",
+      "installerHeader": "assets/installerHeader.png",
+      "installerSidebar": "assets/installerSidebar.bmp",
+      "uninstallerSidebar": "assets/installerSidebar.bmp",
+      "license": "LICENSE.txt",
       "include": "build/installer.nsh",
       "deleteAppDataOnUninstall": true
     }
   },
-
-
-
-
-
-
-
-
   "dependencies": {
     "koffi": "^2.16.3"
   },
   "devDependencies": {
     "electron": "^31.0.0",
-    "electron-builder": "^24.13.3"
+    "electron-builder": "^24.13.3",
+    "png-to-ico": "^3.0.2",
+    "rcedit": "^5.0.2"
   }
 }

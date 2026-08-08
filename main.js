@@ -4,7 +4,7 @@ const {
 } = require('electron');
 const path = require('path');
 
-
+app.setAppUserModelId('com.hrishabhgupta.interviewassistant');
 
 let mainWindow  = null;
 let geminiView  = null;
@@ -40,7 +40,8 @@ function createWindow() {
 
   setupPermissions(geminiSession);
 
-  const appIcon = nativeImage.createFromPath(path.join(__dirname, 'assets', 'icon.png'));
+  const iconPath = path.join(__dirname, 'icon.ico');
+  const appIcon  = nativeImage.createFromPath(iconPath);
 
   mainWindow = new BrowserWindow({
     width: WIN_W,
@@ -167,8 +168,9 @@ function createWindow() {
 function createTrayIcon() {
   if (tray) return;
   try {
-    const iconPath = path.join(__dirname, 'assets', 'icon.ico');
-    tray = new Tray(iconPath);
+    const iconPath = path.join(__dirname, 'icon.ico');
+    const trayIcon = nativeImage.createFromPath(iconPath);
+    tray = new Tray(trayIcon);
     tray.setToolTip('Interview Assistant');
     
     // Left click on system tray icon restores/toggles window
