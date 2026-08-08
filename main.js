@@ -9,6 +9,7 @@ const path = require('path');
 let mainWindow  = null;
 let geminiView  = null;
 let tray        = null;
+let geminiSession = null;
 
 function setupPermissions(sess) {
   sess.setPermissionRequestHandler((webContents, permission, callback) => {
@@ -35,7 +36,8 @@ function createWindow() {
 
   setupPermissions(session.defaultSession);
 
-  const geminiSession = session.fromPartition('persist:gemini-v2');
+  geminiSession = session.fromPartition('persist:gemini-v2');
+
   setupPermissions(geminiSession);
 
   const appIcon = nativeImage.createFromPath(path.join(__dirname, 'assets', 'icon.png'));

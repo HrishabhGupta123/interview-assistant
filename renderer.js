@@ -326,4 +326,36 @@
     window.electronAPI.setOpacity(parseFloat(opacitySlider.value) / 100);
   });
 
+  // ── Clear All Data Confirmation Modal ──────────────────────────────────────
+  const btnClearData = document.getElementById('btn-clear-data');
+  const confirmModal = document.getElementById('confirm-modal');
+  const modalCancel  = document.getElementById('modal-cancel');
+  const modalConfirm = document.getElementById('modal-confirm');
+
+  if (btnClearData && confirmModal) {
+    btnClearData.addEventListener('click', () => {
+      confirmModal.style.display = 'flex';
+      window.electronAPI.showConfirmModal(); // Hides BrowserView so modal shows above!
+    });
+
+    const closeModal = () => {
+      confirmModal.style.display = 'none';
+      window.electronAPI.hideConfirmModal(); // Restores BrowserView!
+    };
+
+    modalCancel && modalCancel.addEventListener('click', closeModal);
+
+    modalConfirm && modalConfirm.addEventListener('click', () => {
+      closeModal();
+      setStatus('sending', 'Clearing data…');
+      window.electronAPI.clearAllData();
+    });
+  }
+
+  window.electronAPI.onDataCleared && window.electronAPI.onDataCleared(() => {
+    setStatus('', 'Data Cleared!');
+    setTimeout(() => setStatus('', 'Ready'), 2500);
+  });
+
 })();
+
