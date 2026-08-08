@@ -1,33 +1,89 @@
-===============================================================================
-                       INTERVIEW ASSISTANT SOFTWARE LICENSE
-                             & TERMS OF SERVICE (EULA)
-===============================================================================
+END USER LICENSE AGREEMENT
+
+Last Updated: August 8, 2026
 
 1. END USER LICENSE AGREEMENT
-By installing, copying, or using Interview Assistant ("Software"), you agree to 
-be bound by the terms of this Agreement. If you do not agree, do not install or 
-use the Software.
+
+By installing, copying, accessing, or using Interview Assistant ("Software"), created by Hrishabh Gupta, you acknowledge that you have read, understood, and agree to be bound by this End User License Agreement ("Agreement").
+
+If you do not agree to these terms, do not install, access, or use the Software.
 
 2. LICENSE GRANT
-Interview Assistant grants you a personal, non-exclusive, non-transferable 
-license to install and use the Software on any compatible computer devices.
 
-3. PRIVACY & SECURITY
-Interview Assistant does not collect, sell, or transmit any user personal data 
-to external third-party servers. All web communications take place directly between 
-the user's machine and Google Gemini services.
+Interview Assistant grants you a personal, non-exclusive, non-transferable, limited license to install and use the Software on compatible computer devices for lawful purposes and in accordance with this Agreement.
 
-4. SCREEN CAPTURE PROTECTION & STEALTH MODE DISCLOSURE
-The Software includes native OS screen capture protection functionality ("Stealth 
-Mode") to prevent background screen recording tools from capturing the app window. 
-You acknowledge that you are responsible for adhering to all local laws, company 
-policies, and examination guidelines when operating the Software.
+You may not redistribute, sublicense, sell, modify, reverse engineer, or commercially exploit the Software except as expressly permitted by applicable law or with prior written permission from the copyright holder.
 
-5. DISCLAIMER OF WARRANTY
-The Software is provided "AS IS", without warranty of any kind, express or implied. 
-In no event shall the authors or copyright holders be liable for any claim, 
-damages, or other liability arising from the use of the Software.
+3. PRIVACY & DATA PROCESSING
 
-===============================================================================
-               Press "I Agree" to accept and continue installation.
-===============================================================================
+Interview Assistant is designed so that the Software does not operate its own external server for collecting, selling, or storing users' personal data.
+
+When AI functionality is used, information entered, displayed, or otherwise processed through the Software may be transmitted directly from the user's device to Google Gemini services for processing.
+
+Such information and interactions may therefore be subject to Google's applicable terms, privacy policies, and generative AI terms, including Google's policies concerning the collection, storage, review, and use of interactions.
+
+Users should review Google's applicable terms and privacy policies before using AI functionality and should avoid submitting confidential, sensitive, or personal information unless they are authorized to do so.
+
+The Software developer does not control Google's independent processing of information once it is transmitted to Google services.
+
+4. SCREEN CAPTURE PROTECTION & STEALTH MODE
+
+The Software includes native operating-system screen capture protection functionality ("Stealth Mode"), which is designed to prevent supported background screen-recording or screen-capture mechanisms from capturing the Software window.
+
+Stealth Mode is a technical privacy/security feature and does not guarantee protection against every form of screen recording, photography, virtualization, monitoring, or other capture technology.
+
+You are solely responsible for ensuring that your use of the Software, including Stealth Mode, complies with all applicable laws, regulations, organizational policies, employment requirements, examination rules, interview policies, and other applicable guidelines.
+
+The developer does not authorize or encourage the use of the Software to circumvent security controls, monitoring requirements, examination restrictions, or other rules imposed by an organization or institution.
+
+5. AI SERVICES AND THIRD-PARTY SERVICES
+
+The Software may rely on third-party AI services, including Google Gemini, to provide certain functionality.
+
+Availability, accuracy, performance, limitations, and processing of AI-generated results may depend on those third-party services. The developer does not guarantee uninterrupted availability or accuracy of third-party AI services.
+
+Your use of third-party services may be subject to their separate terms and policies. You are responsible for reviewing and complying with those terms.
+
+6. USER RESPONSIBILITY
+
+You are solely responsible for your use of the Software and for any information, content, or data submitted through it.
+
+You must use the Software only for lawful purposes and must not use it in a manner that violates applicable laws, contractual obligations, company policies, examination rules, interview policies, or the rights of others.
+
+AI-generated information may be inaccurate, incomplete, or inappropriate for a particular situation. You are responsible for independently evaluating and verifying AI-generated output before relying on it.
+
+7. DISCLAIMER OF WARRANTY
+
+The Software is provided "AS IS" and "AS AVAILABLE", without warranties of any kind, whether express, implied, statutory, or otherwise, to the maximum extent permitted by applicable law.
+
+The developer does not warrant that the Software will be uninterrupted, error-free, secure, accurate, or compatible with every device or operating-system configuration.
+
+8. LIMITATION OF LIABILITY
+
+To the maximum extent permitted by applicable law, the developer and copyright holder shall not be liable for any direct, indirect, incidental, special, consequential, or other damages arising out of or relating to the installation, access, or use of the Software, including reliance on AI-generated results or the availability or operation of third-party services.
+
+9. THIRD-PARTY TERMS
+
+Use of third-party services through the Software, including Google Gemini, may be governed by the applicable terms, privacy policies, and additional service-specific agreements of those providers.
+
+Where applicable, users are responsible for reviewing and complying with those third-party terms.
+
+10. TERMINATION
+
+This license automatically terminates if you violate the terms of this Agreement.
+
+Upon termination, you must cease using the Software and remove it from your devices, subject to any rights that cannot be excluded under applicable law.
+
+11. COPYRIGHT
+
+Interview Assistant and its original software, design, documentation, and associated materials are protected by applicable intellectual-property laws.
+
+Copyright © 2026 Hrishabh Gupta. All rights reserved, except where otherwise stated.
+
+12. CONTACT
+
+For questions regarding this Agreement or the Software, please contact the software developer at:
+
+Email: hrishabhguptapip@gmail.com
+
+Developer: Hrishabh Gupta

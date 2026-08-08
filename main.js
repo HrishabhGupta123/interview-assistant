@@ -1,8 +1,9 @@
 const {
   app, BrowserWindow, BrowserView, globalShortcut,
-  ipcMain, screen, Menu, Tray, session, dialog
+  ipcMain, screen, Menu, Tray, session, dialog, nativeImage
 } = require('electron');
 const path = require('path');
+
 
 
 let mainWindow  = null;
@@ -37,6 +38,8 @@ function createWindow() {
   const geminiSession = session.fromPartition('persist:gemini-v2');
   setupPermissions(geminiSession);
 
+  const appIcon = nativeImage.createFromPath(path.join(__dirname, 'assets', 'icon.png'));
+
   mainWindow = new BrowserWindow({
     width: WIN_W,
     height: WIN_H,
@@ -49,6 +52,7 @@ function createWindow() {
     movable: true,
     skipTaskbar: false,
     hasShadow: false,
+    icon: appIcon,
 
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -57,9 +61,12 @@ function createWindow() {
     },
   });
 
+  mainWindow.setIcon(appIcon);
+
   mainWindow.setAlwaysOnTop(true, 'screen-saver');
   mainWindow.setContentProtection(false);
   mainWindow.setSkipTaskbar(false); // Taskbar icon VISIBLE on startup
+
   mainWindow.isProtected = false;
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
 
@@ -260,7 +267,11 @@ function reloadGemini() {
 }
 
 app.whenReady().then(() => {
+  if (process.platform === 'win32') {
+    app.setAppUserModelId('com.interviewassistant.app');
+  }
   createWindow();
+
 
   globalShortcut.register('Alt+Z', toggleStealth);        // Mode 1: Stealth Mode
   globalShortcut.register('Alt+X', toggleClickThrough);    // Mode 2: Click-Through Mode

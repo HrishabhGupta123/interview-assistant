@@ -2,6 +2,7 @@
   "name": "interview-assistant",
   "version": "1.0.0",
   "description": "Transparent AI Interview Assistant powered by Gemini",
+  "author": "Hrishabh Gupta",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -11,7 +12,8 @@
   "build": {
     "appId": "com.interviewassistant.app",
     "productName": "Interview Assistant",
-    "copyright": "Interview Assistant",
+    "copyright": "Copyright © 2026 Hrishabh Gupta. All rights reserved.",
+
     "asar": true,
     "directories": {
       "output": "dist"
@@ -27,6 +29,12 @@
     "win": {
       "target": [
         {
+          "target": "nsis-web",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
           "target": "nsis",
           "arch": [
             "x64"
@@ -39,19 +47,43 @@
           ]
         }
       ],
-      "icon": "assets/icon.ico",
+
+      "icon": "icon.ico",
       "signAndEditExecutable": false
     },
-    "nsis": {
+    "nsisWeb": {
+      "appPackageUrl": "https://github.com/hrishabhguptapip/interview-assistant/releases/download/v1.0.0/",
       "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "nsis": {
+
+      "oneClick": false,
+      "perMachine": false,
       "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true,
+      "allowElevation": true,
+      "warningsAsErrors": false,
+
+      "createDesktopShortcut": "always",
       "createStartMenuShortcut": true,
       "shortcutName": "Interview Assistant",
+      "installerIcon": "icon.ico",
+      "installerHeaderIcon": "icon.ico",
+      "installerHeader": "assets/installerHeader.png",
+      "installerSidebar": "assets/installerSidebar.bmp",
+      "uninstallerSidebar": "assets/installerSidebar.bmp",
       "license": "LICENSE.txt",
+
+      "include": "build/installer.nsh",
       "deleteAppDataOnUninstall": true
     }
   },
+
+
+
+
+
+
 
 
   "dependencies": {
