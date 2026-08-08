@@ -213,8 +213,24 @@
   });
 
   // ── Window controls ───────────────────────────────────────────────────────
+  const btnMaximize = document.getElementById('btn-maximize');
   btnClose    && btnClose.addEventListener('click',    () => window.electronAPI.closeApp());
   btnMinimize && btnMinimize.addEventListener('click', () => window.electronAPI.minimizeApp());
+  btnMaximize && btnMaximize.addEventListener('click', () => window.electronAPI.maximizeApp && window.electronAPI.maximizeApp());
+
+  window.electronAPI.onMaximizedChanged && window.electronAPI.onMaximizedChanged((isMaximized) => {
+    if (btnMaximize) {
+      btnMaximize.title = isMaximized ? 'Restore' : 'Maximize';
+      btnMaximize.innerHTML = isMaximized
+        ? '<svg viewBox="0 0 24 24"><path d="M4 8h4V4h12v12h-4v4H4V8zm6 8h8V6H10v10z"/></svg>'
+        : '<svg viewBox="0 0 24 24"><path d="M4 4h16v16H4V4zm2 4v10h12V8H6z"/></svg>';
+    }
+  });
+
+
+
+
+
 
   // Disable tooltips on non-interactive elements when Click-Through is ON
   function updateTooltipsForClickThrough(isClickThroughOn) {
@@ -270,8 +286,10 @@
   window.electronAPI.onStealthChanged((isOn) => {
     stealthOn = isOn;
     btnStealth && btnStealth.classList.toggle('active', stealthOn);
-    setStatus(stealthOn ? '' : 'error', stealthOn ? 'Stealth ON' : 'Stealth OFF');
+    setStatus('sending', stealthOn ? 'Stealth ON' : 'Stealth OFF'); // 🟣 Purple Dot
+    setTimeout(() => setStatus('', 'Ready'), 2000);
   });
+
 
   // ── Opacity slider ────────────────────────────────────────────────────────
   opacitySlider && opacitySlider.addEventListener('input', () => {

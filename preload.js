@@ -4,7 +4,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   sendToGemini: (text) => ipcRenderer.send('send-to-gemini', text),
   closeApp:     ()     => ipcRenderer.send('close-app'),
   minimizeApp:  ()     => ipcRenderer.send('minimize-app'),
+  maximizeApp:  ()     => ipcRenderer.send('maximize-app'),
   setOpacity:   (v)   => ipcRenderer.send('set-opacity', v),
+
   toggleClickThrough:   () => ipcRenderer.send('toggle-click-through'),
   toggleStealth:        () => ipcRenderer.send('toggle-stealth'),
   reloadGemini:         () => ipcRenderer.send('reload-gemini'),
@@ -19,4 +21,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onMicError:           (cb) => ipcRenderer.on('mic-error',            (_e, err) => cb(err)),
   onStealthChanged:     (cb) => ipcRenderer.on('stealth-changed',      (_e, val) => cb(val)),
   onClickThroughChanged:(cb) => ipcRenderer.on('click-through-changed',(_e, val) => cb(val)),
+  onMaximizedChanged:   (cb) => ipcRenderer.on('maximized-changed',    (_e, val) => cb(val)),
 });
+

@@ -44,10 +44,11 @@ function createWindow() {
     frame: false,
     transparent: true,
     alwaysOnTop: true,
-    resizable: true,
+    resizable: false, // Disables border dragging to guarantee 0% distortion!
     movable: true,
     skipTaskbar: false,
     hasShadow: false,
+
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -60,8 +61,6 @@ function createWindow() {
   mainWindow.setSkipTaskbar(false); // Taskbar icon VISIBLE on startup
   mainWindow.isProtected = false;
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
-
-
 
   geminiView = new BrowserView({
     webPreferences: {
@@ -84,10 +83,13 @@ function createWindow() {
     });
   }
 
+
+
   updateBrowserViewBounds();
   mainWindow.on('resize', updateBrowserViewBounds);
 
   geminiView.webContents.loadURL('https://gemini.google.com');
+
 
   // Relayers for mic events from Gemini to Renderer
   geminiView.webContents.on('console-message', (_e, _level, message) => {
@@ -261,8 +263,7 @@ app.whenReady().then(() => {
 
   globalShortcut.register('Alt+Z', toggleStealth);        // Mode 1: Stealth Mode
   globalShortcut.register('Alt+X', toggleClickThrough);    // Mode 2: Click-Through Mode
-  globalShortcut.register('Alt+C', toggleMinimizeWindow);  // Mode 3: Minimize / Restore
-  globalShortcut.register('Alt+V', () => app.quit());       // Mode 4: Close App
+  globalShortcut.register('Alt+C', toggleMinimizeWindow);  // Emergency Panic Hide / Restore
   globalShortcut.register('Alt+R', reloadGemini);          // Reload Gemini
 
   globalShortcut.register('Ctrl+Shift+M', () => {
@@ -274,9 +275,26 @@ app.whenReady().then(() => {
 
 
 
+
 ipcMain.on('minimize-app', () => {
-  toggleMinimizeWindow();
+  if (mainWindow) mainWindow.minimize(); // Normal Windows Minimize to Taskbar
 });
+
+ipcMain.on('maximize-app', () => {
+  if (!mainWindow) return;
+  const isMax = mainWindow.isMaximized();
+  if (isMax) {
+    mainWindow.unmaximize();
+    if (mainWindow.webContents) mainWindow.webContents.send('maximized-changed', false);
+  } else {
+    mainWindow.maximize();
+    if (mainWindow.webContents) mainWindow.webContents.send('maximized-changed', true);
+  }
+  setTimeout(updateBrowserViewBounds, 100);
+});
+
+
+
 
 ipcMain.on('reload-gemini', () => {
   reloadGemini();

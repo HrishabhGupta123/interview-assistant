@@ -94,6 +94,44 @@ html, body {
 .ctrl-btn svg { width: 14px; height: 14px; fill: currentColor; }
 .ctrl-btn.active { background: rgba(99,102,241,0.2); color: #a5b4fc; border-color: rgba(99,102,241,0.3); }
 
+/* ── Footer Tools ───────────────────────────────────────────────── */
+.footer-tools {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 8px;
+}
+
+.footer-tool-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+.footer-tool-btn:hover {
+  background: rgba(255,255,255,0.15);
+  color: var(--text);
+}
+.footer-tool-btn.active {
+  background: rgba(99,102,241,0.25);
+  color: #a5b4fc;
+  border-color: rgba(99,102,241,0.4);
+}
+.footer-tool-btn svg {
+  width: 13px;
+  height: 13px;
+  fill: currentColor;
+}
+
+
+
 /* ── Gemini Slot ─────────────────────────────────────────────────── */
 .gemini-slot {
   flex: 1;
