@@ -42,10 +42,17 @@
     window.electronAPI.sendToGemini(text);
     if (searchInput) searchInput.value = '';
     setTimeout(() => {
-      setStatus('', 'Ready');
+      if (micBtn && micBtn.style.opacity === '0.5') {
+        setStatus('web-mic', 'Unavailable', 0); // Keep Red Dot + Unavailable while mic is blurred!
+      } else {
+        setStatus('', 'Ready');
+      }
       searchSend && searchSend.classList.remove('sending');
     }, 1500);
   }
+
+
+
 
   searchInput && searchInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') { e.preventDefault(); sendToGemini(); }
@@ -134,13 +141,20 @@
     pauseAppVad();
 
     if (shouldSend) {
-      setStatus('sending', 'Sending prompt to Gemini…');
+      setStatus('sending', 'Sending...');
       window.electronAPI.toggleGeminiMic(); // stops Gemini mic & clicks send
-      setTimeout(() => setStatus('', 'Ready'), 2500);
+      setTimeout(() => {
+        if (micBtn) {
+          micBtn.style.pointerEvents = '';
+          micBtn.style.opacity = '1';
+        }
+        setStatus('', 'Ready');
+      }, 2500);
     } else {
       setStatus('', 'Ready');
     }
   }
+
 
   let isAppMicTriggered = false;
 
@@ -157,17 +171,16 @@
   micBtn && micBtn.addEventListener('click', toggleMic);
   window.electronAPI.onToggleMic && window.electronAPI.onToggleMic(toggleMic);
 
-  // Detect Web Click Mic vs App Mic Button Click
+  // Detect Web Mic / Response Active -> 🔴 Red Dot + Unavailable + Blur Mic
   window.electronAPI.onMicStarted && window.electronAPI.onMicStarted(() => {
-    if (!isAppMicTriggered) {
-      if (isRecording) pauseAppVad();
-      setStatus('web-mic', 'Unavailable', 0); // 🔴 Red Dot + Unavailable label
-      if (micBtn) {
-        micBtn.style.pointerEvents = 'none';
-        micBtn.style.opacity = '0.5'; // Blur & lock mic button
-      }
+    if (isRecording) pauseAppVad();
+    setStatus('web-mic', 'Unavailable', 0); // 🔴 Red Dot + Unavailable ALWAYS when blurred!
+    if (micBtn) {
+      micBtn.style.pointerEvents = 'none';
+      micBtn.style.opacity = '0.5'; // Blur & lock mic button
     }
   });
+
 
   window.electronAPI.onMicStopped && window.electronAPI.onMicStopped(() => {
     isAppMicTriggered = false;

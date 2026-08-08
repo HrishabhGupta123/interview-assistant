@@ -232,7 +232,9 @@ html, body {
 }
 .status-dot.listening { background: #f59e0b; box-shadow: 0 0 6px #f59e0b; }
 .status-dot.sending   { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
-.status-dot.error     { background: var(--danger); box-shadow: 0 0 6px var(--danger); }
+.status-dot.web-mic,
+.status-dot.error     { background: #ef4444 !important; box-shadow: 0 0 8px #ef4444; }
+
 .status-label {
   font-size: 10px;
   color: var(--text-muted);
