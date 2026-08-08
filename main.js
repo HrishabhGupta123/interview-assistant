@@ -56,10 +56,11 @@ function createWindow() {
   });
 
   mainWindow.setAlwaysOnTop(true, 'screen-saver');
-  mainWindow.setContentProtection(true);
-  mainWindow.setSkipTaskbar(true); // Hide from taskbar at bottom
-  mainWindow.isProtected = true;
+  mainWindow.setContentProtection(false);
+  mainWindow.setSkipTaskbar(false); // Taskbar icon VISIBLE on startup
+  mainWindow.isProtected = false;
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
+
 
 
   geminiView = new BrowserView({
@@ -146,9 +147,9 @@ function createWindow() {
     geminiView = null;
   });
 
-  // Start with Stealth Mode OFF by default
-  applyStealthMode(false);
+  createTrayIcon();
 }
+
 
 
 function createTrayIcon() {
@@ -186,8 +187,8 @@ function applyStealthMode(stealthOn) {
   // 1. Screen Capture Protection (Invisible to OBS, Zoom, Teams, Mirroring when ON)
   mainWindow.setContentProtection(stealthOn);
 
-  // 2. Hide icon from Taskbar at bottom always
-  mainWindow.setSkipTaskbar(true);
+  // 2. Taskbar visibility: HIDDEN when Stealth ON (true), VISIBLE when Stealth OFF (false)
+  mainWindow.setSkipTaskbar(stealthOn);
 
   // 3. Tray visibility: HIDDEN when Stealth ON, VISIBLE when Stealth OFF
   if (stealthOn) {
@@ -200,6 +201,7 @@ function applyStealthMode(stealthOn) {
     mainWindow.webContents.send('stealth-changed', stealthOn);
   }
 }
+
 
 function toggleStealth() {
   if (!mainWindow) return;

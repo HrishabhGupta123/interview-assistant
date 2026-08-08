@@ -171,25 +171,31 @@
   micBtn && micBtn.addEventListener('click', toggleMic);
   window.electronAPI.onToggleMic && window.electronAPI.onToggleMic(toggleMic);
 
-  // Detect Web Mic / Response Active -> 🔴 Red Dot + Unavailable + Blur Mic
+  // Detect Web Mic / Response Active -> 🔴 Red Dot + Unavailable + Blur Controls
   window.electronAPI.onMicStarted && window.electronAPI.onMicStarted(() => {
     if (isRecording) pauseAppVad();
     setStatus('web-mic', 'Unavailable', 0); // 🔴 Red Dot + Unavailable ALWAYS when blurred!
-    if (micBtn) {
-      micBtn.style.pointerEvents = 'none';
-      micBtn.style.opacity = '0.5'; // Blur & lock mic button
-    }
+    [micBtn, searchSend].forEach(el => {
+      if (el) {
+        el.style.pointerEvents = 'none';
+        el.style.opacity = '0.5';
+      }
+    });
+    if (searchInput) searchInput.disabled = true;
   });
-
 
   window.electronAPI.onMicStopped && window.electronAPI.onMicStopped(() => {
     isAppMicTriggered = false;
-    if (micBtn) {
-      micBtn.style.pointerEvents = '';
-      micBtn.style.opacity = '1'; // Un-blur & unlock mic button
-    }
+    [micBtn, searchSend].forEach(el => {
+      if (el) {
+        el.style.pointerEvents = '';
+        el.style.opacity = '1';
+      }
+    });
+    if (searchInput) searchInput.disabled = false;
     setStatus('', 'Ready'); // 🟢 Green Dot + Ready label
   });
+
 
 
 
