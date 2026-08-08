@@ -173,6 +173,7 @@
 
   // Detect Web Mic / Response Active -> 🔴 Red Dot + Unavailable + Blur Controls
   window.electronAPI.onMicStarted && window.electronAPI.onMicStarted(() => {
+    if (isAppMicTriggered) return; // Keep App Mic VAD active!
     if (isRecording) pauseAppVad();
     setStatus('web-mic', 'Unavailable', 0); // 🔴 Red Dot + Unavailable ALWAYS when blurred!
     [micBtn, searchSend].forEach(el => {
@@ -183,6 +184,7 @@
     });
     if (searchInput) searchInput.disabled = true;
   });
+
 
   window.electronAPI.onMicStopped && window.electronAPI.onMicStopped(() => {
     isAppMicTriggered = false;
