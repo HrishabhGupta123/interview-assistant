@@ -10,7 +10,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
   toggleClickThrough:   () => ipcRenderer.send('toggle-click-through'),
   toggleStealth:        () => ipcRenderer.send('toggle-stealth'),
   reloadGemini:         () => ipcRenderer.send('reload-gemini'),
+  clearAllData:         () => ipcRenderer.send('clear-all-data'),
+  showConfirmModal:     () => ipcRenderer.send('show-confirm-modal'),
+  hideConfirmModal:     () => ipcRenderer.send('hide-confirm-modal'),
   setIgnoreMouseEvents: (ignore, forward) => ipcRenderer.send('set-ignore-mouse-events', ignore, forward),
+
 
   
   toggleGeminiMic:      () => ipcRenderer.send('toggle-gemini-mic'),
@@ -22,5 +26,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onStealthChanged:     (cb) => ipcRenderer.on('stealth-changed',      (_e, val) => cb(val)),
   onClickThroughChanged:(cb) => ipcRenderer.on('click-through-changed',(_e, val) => cb(val)),
   onMaximizedChanged:   (cb) => ipcRenderer.on('maximized-changed',    (_e, val) => cb(val)),
+  onDataCleared:        (cb) => ipcRenderer.on('data-cleared',        (_e)      => cb()),
 });
+
 

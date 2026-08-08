@@ -1,8 +1,9 @@
 const {
   app, BrowserWindow, BrowserView, globalShortcut,
-  ipcMain, screen, Menu, Tray, session
+  ipcMain, screen, Menu, Tray, session, dialog
 } = require('electron');
 const path = require('path');
+
 
 let mainWindow  = null;
 let geminiView  = null;
@@ -299,6 +300,35 @@ ipcMain.on('maximize-app', () => {
 ipcMain.on('reload-gemini', () => {
   reloadGemini();
 });
+
+ipcMain.on('show-confirm-modal', () => {
+  if (geminiView) {
+    geminiView.setBounds({ x: 0, y: 0, width: 0, height: 0 }); // Hides BrowserView so dark modal renders on top!
+  }
+});
+
+ipcMain.on('hide-confirm-modal', () => {
+  updateBrowserViewBounds(); // Restores BrowserView!
+});
+
+ipcMain.on('clear-all-data', async () => {
+  if (geminiSession) {
+    try {
+      await geminiSession.clearStorageData();
+      await geminiSession.clearCache();
+    } catch (e) {
+      console.error('Clear data error:', e);
+    }
+  }
+  updateBrowserViewBounds();
+  reloadGemini();
+  if (mainWindow && mainWindow.webContents) {
+    mainWindow.webContents.send('data-cleared');
+  }
+});
+
+
+
 
 
 

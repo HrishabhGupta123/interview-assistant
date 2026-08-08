@@ -212,6 +212,36 @@
     window.electronAPI.reloadGemini && window.electronAPI.reloadGemini();
   });
 
+  const btnClearData  = document.getElementById('btn-clear-data');
+  const confirmModal  = document.getElementById('confirm-modal');
+  const modalCancel   = document.getElementById('modal-cancel');
+  const modalConfirm  = document.getElementById('modal-confirm');
+
+  btnClearData && btnClearData.addEventListener('click', () => {
+    if (confirmModal) confirmModal.classList.add('active');
+    window.electronAPI.showConfirmModal && window.electronAPI.showConfirmModal();
+  });
+
+  modalCancel && modalCancel.addEventListener('click', () => {
+    if (confirmModal) confirmModal.classList.remove('active');
+    window.electronAPI.hideConfirmModal && window.electronAPI.hideConfirmModal();
+  });
+
+  modalConfirm && modalConfirm.addEventListener('click', () => {
+    if (confirmModal) confirmModal.classList.remove('active');
+    setStatus('sending', 'Clearing Data...');
+    window.electronAPI.clearAllData && window.electronAPI.clearAllData();
+  });
+
+  window.electronAPI.onDataCleared && window.electronAPI.onDataCleared(() => {
+    setStatus('sending', 'Data Cleared');
+    setTimeout(() => setStatus('', 'Ready'), 2000);
+  });
+
+
+
+
+
   // ── Window controls ───────────────────────────────────────────────────────
   const btnMaximize = document.getElementById('btn-maximize');
   btnClose    && btnClose.addEventListener('click',    () => window.electronAPI.closeApp());
