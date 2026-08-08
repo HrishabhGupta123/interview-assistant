@@ -250,14 +250,32 @@
   btnMinimize && btnMinimize.addEventListener('click', () => window.electronAPI.minimizeApp());
   btnMaximize && btnMaximize.addEventListener('click', () => window.electronAPI.maximizeApp && window.electronAPI.maximizeApp());
 
-  window.electronAPI.onMaximizedChanged && window.electronAPI.onMaximizedChanged((isMaximized) => {
-    if (btnMaximize) {
-      btnMaximize.title = isMaximized ? 'Restore' : 'Maximize';
-      btnMaximize.innerHTML = isMaximized
-        ? '<svg viewBox="0 0 24 24"><path d="M4 8h4V4h12v12h-4v4H4V8zm6 8h8V6H10v10z"/></svg>'
-        : '<svg viewBox="0 0 24 24"><path d="M4 4h16v16H4V4zm2 4v10h12V8H6z"/></svg>';
-    }
-  });
+  // ── Smooth JS Window Dragging Handler ──────────────────────────────────────
+  const dragHeader = document.getElementById('drag-region') || document.querySelector('.header');
+  if (dragHeader) {
+    let isDragging = false;
+    let startX = 0, startY = 0;
+
+    dragHeader.addEventListener('mousedown', (e) => {
+      if (e.target.closest('.header-controls')) return;
+      isDragging = true;
+      startX = e.screenX;
+      startY = e.screenY;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const deltaX = e.screenX - startX;
+      const deltaY = e.screenY - startY;
+      startX = e.screenX;
+      startY = e.screenY;
+      window.electronAPI.dragWindow && window.electronAPI.dragWindow(deltaX, deltaY);
+    });
+
+    window.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
+  }
 
 
 

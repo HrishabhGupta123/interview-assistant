@@ -13,6 +13,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   clearAllData:         () => ipcRenderer.send('clear-all-data'),
   showConfirmModal:     () => ipcRenderer.send('show-confirm-modal'),
   hideConfirmModal:     () => ipcRenderer.send('hide-confirm-modal'),
+  dragWindow:           (deltaX, deltaY) => ipcRenderer.send('drag-window', { deltaX, deltaY }),
   setIgnoreMouseEvents: (ignore, forward) => ipcRenderer.send('set-ignore-mouse-events', ignore, forward),
 
 

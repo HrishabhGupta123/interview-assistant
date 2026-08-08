@@ -30,7 +30,7 @@ function createWindow() {
   const { width, height } = primaryDisplay.workAreaSize;
 
   const WIN_W    = 440;
-  const WIN_H    = height;
+  const WIN_H    = Math.min(840, height - 60);
   const HEADER_H = 58;
   const FOOTER_H = 72;
 
@@ -46,12 +46,17 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: WIN_W,
     height: WIN_H,
+    minWidth: WIN_W,
+    maxWidth: WIN_W,
+    minHeight: WIN_H,
+    maxHeight: WIN_H,
     x: width - WIN_W,
     y: 0,
     frame: false,
     transparent: true,
     alwaysOnTop: true,
     resizable: false, // Disables border dragging to guarantee 0% distortion!
+    useContentSize: true,
     movable: true,
     skipTaskbar: false,
     hasShadow: false,
@@ -66,7 +71,7 @@ function createWindow() {
 
   mainWindow.setIcon(appIcon);
 
-  mainWindow.setAlwaysOnTop(true, 'screen-saver');
+  mainWindow.setAlwaysOnTop(true, 'floating');
   mainWindow.setContentProtection(false);
   mainWindow.setSkipTaskbar(false); // Taskbar icon VISIBLE on startup
 
@@ -314,6 +319,12 @@ ipcMain.on('maximize-app', () => {
 
 ipcMain.on('reload-gemini', () => {
   reloadGemini();
+});
+
+ipcMain.on('drag-window', (e, { deltaX, deltaY }) => {
+  if (!mainWindow) return;
+  const [x, y] = mainWindow.getPosition();
+  mainWindow.setPosition(x + deltaX, y + deltaY);
 });
 
 ipcMain.on('show-confirm-modal', () => {
