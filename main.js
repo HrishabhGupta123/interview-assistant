@@ -324,7 +324,17 @@ ipcMain.on('reload-gemini', () => {
 ipcMain.on('drag-window', (e, { deltaX, deltaY }) => {
   if (!mainWindow) return;
   const [x, y] = mainWindow.getPosition();
-  mainWindow.setPosition(x + deltaX, y + deltaY);
+  const primaryDisplay = screen.getPrimaryDisplay();
+  const { height } = primaryDisplay.workAreaSize;
+  const WIN_W = 440;
+  const WIN_H = Math.min(840, height - 60);
+
+  mainWindow.setBounds({
+    x: x + deltaX,
+    y: y + deltaY,
+    width: WIN_W,
+    height: WIN_H
+  });
 });
 
 ipcMain.on('show-confirm-modal', () => {

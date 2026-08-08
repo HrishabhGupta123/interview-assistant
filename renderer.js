@@ -312,20 +312,24 @@
     updateTooltipsForClickThrough(clickThrough);
   });
 
-  // All toolbar controls stay interactive
-  const interactiveBtns = [
-    btnClose, btnMinimize, btnMaximize,
-    btnStealth, btnClickThru, btnReload, btnClearData,
-    opacitySlider, micBtn, searchSend, searchInput
-  ].filter(Boolean);
-  interactiveBtns.forEach(btn => {
-    btn.addEventListener('mouseenter', () => {
-      if (clickThrough) window.electronAPI.setIgnoreMouseEvents(false);
-    });
-    btn.addEventListener('mouseleave', () => {
-      if (clickThrough) window.electronAPI.setIgnoreMouseEvents(true, { forward: true });
-    });
-  });
+  // When Click-Through mode is ON, ONLY Click-Through button & Close button remain interactive!
+  let isHoveredOverBtn = false;
+
+  function setIgnore(e) {
+    if (!clickThrough) return;
+    const activeBtns = [btnClickThru, btnClose].filter(Boolean);
+    const hoverEl = document.elementFromPoint(e.clientX, e.clientY);
+    const hoveringInteractive = activeBtns.some(btn => btn === hoverEl || btn.contains(hoverEl));
+
+    if (hoveringInteractive && !isHoveredOverBtn) {
+      isHoveredOverBtn = true;
+      window.electronAPI.setIgnoreMouseEvents(false, true);
+    } else if (!hoveringInteractive && isHoveredOverBtn) {
+      isHoveredOverBtn = false;
+      window.electronAPI.setIgnoreMouseEvents(true, true);
+    }
+  }
+  window.addEventListener('mousemove', setIgnore);
 
 
 
