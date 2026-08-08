@@ -27,6 +27,12 @@
     "win": {
       "target": [
         {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
           "target": "portable",
           "arch": [
             "x64"
@@ -35,8 +41,19 @@
       ],
       "icon": "assets/icon.ico",
       "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Interview Assistant",
+      "license": "LICENSE.txt",
+      "deleteAppDataOnUninstall": true
     }
   },
+
+
   "dependencies": {
     "koffi": "^2.16.3"
   },

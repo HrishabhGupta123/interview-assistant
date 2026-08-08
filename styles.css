@@ -47,18 +47,13 @@ html, body {
   gap: 10px;
 }
 
-.logo-dot {
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  box-shadow: 0 0 8px rgba(99,102,241,0.8);
-  animation: glow-pulse 2s ease-in-out infinite;
+.header-logo {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  border-radius: 4px;
 }
 
-@keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 6px rgba(99,102,241,0.6); }
-  50%       { box-shadow: 0 0 14px rgba(99,102,241,1); }
-}
 
 .app-title {
   font-size: 13px;

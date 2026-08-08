@@ -99,39 +99,114 @@ function createWindow() {
     }
   });
 
+  geminiView.webContents.on('did-finish-load', () => {
+    geminiView.webContents.executeJavaScript(`
+      (function() {
+        if (window.__geminiMicObserverInjected) return;
+        window.__geminiMicObserverInjected = true;
+
+        function deepQuery(selector, root = document) {
+          let el = root.querySelector(selector);
+          if (el) return el;
+          const elements = root.querySelectorAll('*');
+          for (let element of elements) {
+            if (element.shadowRoot) {
+              el = deepQuery(selector, element.shadowRoot);
+              if (el) return el;
+            }
+          }
+          return null;
+        }
+
+        var observer = new MutationObserver(function() {
+          var stopBtn = deepQuery('button[aria-label*="stop" i]') ||
+                        deepQuery('mat-icon[data-mat-icon-name="stop"]');
+
+          // If ANY stop button exists (mic recording OR response generating) -> Lock button!
+          if (stopBtn && !window.__geminiBusy) {
+            window.__geminiBusy = true;
+            console.log('[GEMINI_MIC_STARTED]');
+          } else if (!stopBtn && window.__geminiBusy) {
+            window.__geminiBusy = false;
+            console.log('[GEMINI_MIC_STOPPED]');
+          }
+        });
+
+
+
+        observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+      })();
+    `).catch(e => console.error('[Observer Inject Err]', e));
+  });
+
+
   mainWindow.on('closed', () => {
+    if (tray) { tray.destroy(); tray = null; }
     mainWindow = null;
     geminiView = null;
   });
+
+  // Start with Stealth Mode OFF by default
+  applyStealthMode(false);
 }
 
-function toggleShowWindow() {
+
+function createTrayIcon() {
+  if (tray) return;
+  try {
+    const iconPath = path.join(__dirname, 'assets', 'icon.ico');
+    tray = new Tray(iconPath);
+    tray.setToolTip('Interview Assistant');
+    
+    // Left click on system tray icon restores/toggles window
+    tray.on('click', () => toggleMinimizeWindow());
+
+    tray.setContextMenu(Menu.buildFromTemplate([
+      { label: 'Restore Window (Alt+Z)', click: () => toggleMinimizeWindow() },
+      { label: 'Toggle Stealth Mode (Alt+X)', click: () => toggleStealth() },
+      { type: 'separator' },
+      { label: 'Exit', click: () => app.quit() },
+    ]));
+  } catch (e) {
+    console.warn('Tray icon creation failed:', e.message);
+  }
+}
+
+function removeTrayIcon() {
+  if (tray) {
+    try { tray.destroy(); } catch (e) {}
+    tray = null;
+  }
+}
+
+function applyStealthMode(stealthOn) {
   if (!mainWindow) return;
-  if (mainWindow.isVisible()) {
-    mainWindow.hide();
+  mainWindow.isProtected = stealthOn;
+
+  // 1. Screen Capture Protection (Invisible to OBS, Zoom, Teams, Mirroring when ON)
+  mainWindow.setContentProtection(stealthOn);
+
+  // 2. Hide icon from Taskbar at bottom always
+  mainWindow.setSkipTaskbar(true);
+
+  // 3. Tray visibility: HIDDEN when Stealth ON, VISIBLE when Stealth OFF
+  if (stealthOn) {
+    removeTrayIcon();
   } else {
-    mainWindow.show();
-    mainWindow.focus();
-    mainWindow.setAlwaysOnTop(true, 'screen-saver');
+    createTrayIcon();
+  }
+
+  if (mainWindow.webContents) {
+    mainWindow.webContents.send('stealth-changed', stealthOn);
   }
 }
 
 function toggleStealth() {
   if (!mainWindow) return;
-  const isProtected = mainWindow.isProtected || false;
-  const nextProtection = !isProtected;
-  mainWindow.isProtected = nextProtection;
-
-  // 1. Windows Screen Capture Protection (Invisible to OBS, Zoom, Teams, Mirroring)
-  mainWindow.setContentProtection(nextProtection);
-
-  // 2. Hide icon from Windows Taskbar at the bottom
-  mainWindow.setSkipTaskbar(nextProtection);
-
-  if (mainWindow.webContents) {
-    mainWindow.webContents.send('stealth-changed', nextProtection);
-  }
+  const currentStealth = mainWindow.isProtected !== undefined ? mainWindow.isProtected : true;
+  applyStealthMode(!currentStealth);
 }
+
 
 function toggleClickThrough() {
   if (!mainWindow) return;
@@ -147,12 +222,46 @@ function toggleClickThrough() {
 }
 
 
+function updateBrowserViewBounds() {
+  if (!mainWindow || !geminiView) return;
+  const [w, h] = mainWindow.getSize();
+  const HEADER_H = 58;
+  const FOOTER_H = 72;
+  geminiView.setBounds({
+    x: 0,
+    y: HEADER_H,
+    width: w,
+    height: Math.max(100, h - HEADER_H - FOOTER_H),
+  });
+}
+
+function toggleMinimizeWindow() {
+  if (!mainWindow) return;
+  if (mainWindow.isVisible() && !mainWindow.isMinimized()) {
+    mainWindow.hide();
+  } else {
+    mainWindow.show();
+    mainWindow.focus();
+    mainWindow.setAlwaysOnTop(true, 'screen-saver');
+    updateBrowserViewBounds();
+  }
+}
+
+
+function reloadGemini() {
+  if (geminiView && geminiView.webContents) {
+    geminiView.webContents.reload();
+  }
+}
+
 app.whenReady().then(() => {
   createWindow();
 
-  globalShortcut.register('Alt+X', toggleStealth);
-  globalShortcut.register('Alt+Shift+G', toggleShowWindow);
-  globalShortcut.register('Alt+C', toggleClickThrough);
+  globalShortcut.register('Alt+Z', toggleStealth);        // Mode 1: Stealth Mode
+  globalShortcut.register('Alt+X', toggleClickThrough);    // Mode 2: Click-Through Mode
+  globalShortcut.register('Alt+C', toggleMinimizeWindow);  // Mode 3: Minimize / Restore
+  globalShortcut.register('Alt+V', () => app.quit());       // Mode 4: Close App
+  globalShortcut.register('Alt+R', reloadGemini);          // Reload Gemini
 
   globalShortcut.register('Ctrl+Shift+M', () => {
     if (mainWindow && mainWindow.webContents) {
@@ -160,6 +269,18 @@ app.whenReady().then(() => {
     }
   });
 });
+
+
+
+ipcMain.on('minimize-app', () => {
+  toggleMinimizeWindow();
+});
+
+ipcMain.on('reload-gemini', () => {
+  reloadGemini();
+});
+
+
 
 
 ipcMain.on('send-to-gemini', (event, text) => {

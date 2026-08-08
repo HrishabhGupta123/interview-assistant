@@ -17,10 +17,22 @@
 
   setTimeout(() => { if (geminiLoading) geminiLoading.style.display = 'none'; }, 5000);
 
-  function setStatus(state, label) {
+  let statusTimer = null;
+
+  function setStatus(state, label, duration = 2000) {
     if (statusDot)   statusDot.className    = 'status-dot ' + (state || '');
     if (statusLabel) statusLabel.textContent = label || 'Ready';
+
+    if (statusTimer) { clearTimeout(statusTimer); statusTimer = null; }
+
+    if (duration > 0 && label && label !== 'Ready') {
+      statusTimer = setTimeout(() => {
+        if (statusDot)   statusDot.className    = 'status-dot';
+        if (statusLabel) statusLabel.textContent = 'Ready';
+      }, duration);
+    }
   }
+
 
   function sendToGemini() {
     const text = searchInput ? searchInput.value.trim() : '';
@@ -69,10 +81,10 @@
         micBtn && micBtn.classList.add('recording');
         setStatus('listening', 'Listening to your voice…');
 
-        // Trigger Gemini mic
+        // Trigger Gemini native mic
         window.electronAPI.toggleGeminiMic();
 
-        // Check actual microphone decibels every 100ms
+        // Check actual microphone volume every 100ms
         vadInterval = setInterval(() => {
           if (!isRecording) return;
 
@@ -99,8 +111,6 @@
               stopRealVoiceVad(true); // true = send to Gemini
             }
           }
-
-
         }, 100);
       })
       .catch((err) => {
@@ -110,16 +120,18 @@
       });
   }
 
-  function stopRealVoiceVad(shouldSend = false) {
+  function pauseAppVad() {
     isRecording   = false;
     speechStarted = false;
     silenceMillis = 0;
-
     if (vadInterval) { clearInterval(vadInterval); vadInterval = null; }
     if (audioCtx)    { try { audioCtx.close(); } catch(e){} audioCtx = null; }
     if (micStream)   { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
-
     micBtn && micBtn.classList.remove('recording');
+  }
+
+  function stopRealVoiceVad(shouldSend = false) {
+    pauseAppVad();
 
     if (shouldSend) {
       setStatus('sending', 'Sending prompt to Gemini…');
@@ -127,14 +139,17 @@
       setTimeout(() => setStatus('', 'Ready'), 2500);
     } else {
       setStatus('', 'Ready');
-      window.electronAPI.toggleGeminiMic(); // stops Gemini mic without send
     }
   }
 
+  let isAppMicTriggered = false;
+
   function toggleMic() {
     if (isRecording) {
+      isAppMicTriggered = false;
       stopRealVoiceVad(true); // manually clicking mic stops & sends immediately
     } else {
+      isAppMicTriggered = true;
       startRealVoiceVad();
     }
   }
@@ -142,9 +157,65 @@
   micBtn && micBtn.addEventListener('click', toggleMic);
   window.electronAPI.onToggleMic && window.electronAPI.onToggleMic(toggleMic);
 
+  // Detect Web Click Mic vs App Mic Button Click
+  window.electronAPI.onMicStarted && window.electronAPI.onMicStarted(() => {
+    if (!isAppMicTriggered) {
+      // Turned ON by direct web click inside Gemini
+      if (isRecording) pauseAppVad();
+      setStatus('recording', 'Ready', 0); // Red dot indicator + simple Ready status
+      if (micBtn) {
+        micBtn.style.pointerEvents = 'none';
+        micBtn.style.opacity = '0.5';
+      }
+    }
+  });
+
+  window.electronAPI.onMicStopped && window.electronAPI.onMicStopped(() => {
+    isAppMicTriggered = false;
+    if (micBtn) {
+      micBtn.style.pointerEvents = '';
+      micBtn.style.opacity = '1';
+    }
+    setStatus('', 'Ready');
+  });
+
+
+
+
+
+
+
+
+
+  const btnReload = document.getElementById('btn-reload');
+  btnReload && btnReload.addEventListener('click', () => {
+    setStatus('sending', 'Reloading Gemini...');
+    window.electronAPI.reloadGemini && window.electronAPI.reloadGemini();
+  });
+
   // ── Window controls ───────────────────────────────────────────────────────
   btnClose    && btnClose.addEventListener('click',    () => window.electronAPI.closeApp());
   btnMinimize && btnMinimize.addEventListener('click', () => window.electronAPI.minimizeApp());
+
+  // Disable tooltips on non-interactive elements when Click-Through is ON
+  function updateTooltipsForClickThrough(isClickThroughOn) {
+    const interactiveSet = new Set([btnClickThru, micBtn, btnClose]);
+    document.querySelectorAll('[title], [data-orig-title]').forEach(el => {
+      if (!interactiveSet.has(el)) {
+        if (isClickThroughOn) {
+          if (el.title) {
+            el.dataset.origTitle = el.title;
+            el.removeAttribute('title');
+          }
+        } else {
+          if (el.dataset.origTitle) {
+            el.title = el.dataset.origTitle;
+            delete el.dataset.origTitle;
+          }
+        }
+      }
+    });
+  }
 
   // ── Click-through toggle ──────────────────────────────────────────────────
   let clickThrough = false;
@@ -152,21 +223,31 @@
   window.electronAPI.onClickThroughChanged((isOn) => {
     clickThrough = isOn;
     btnClickThru && btnClickThru.classList.toggle('active', clickThrough);
-    setStatus(clickThrough ? 'sending' : '', clickThrough ? 'Click-through ON' : 'Ready');
+    setStatus('sending', clickThrough ? 'Click-through ON' : 'Click-through OFF');
+    updateTooltipsForClickThrough(clickThrough);
   });
 
-  const headerEl = document.getElementById('drag-region');
-  const footerEl = document.querySelector('.footer');
-  [headerEl, footerEl].forEach(el => {
-    if (!el) return;
-    el.addEventListener('mouseenter', () => { if (clickThrough) window.electronAPI.setIgnoreMouseEvents(false); });
-    el.addEventListener('mouseleave', () => { if (clickThrough) window.electronAPI.setIgnoreMouseEvents(true, { forward: true }); });
+  // ONLY Click-Through, Mic, and Close buttons stay interactive when Click-Through is ON
+  const interactiveBtns = [btnClickThru, micBtn, btnClose].filter(Boolean);
+  interactiveBtns.forEach(btn => {
+    btn.addEventListener('mouseenter', () => {
+      if (clickThrough) window.electronAPI.setIgnoreMouseEvents(false);
+    });
+    btn.addEventListener('mouseleave', () => {
+      if (clickThrough) window.electronAPI.setIgnoreMouseEvents(true, { forward: true });
+    });
   });
+
+
+
+
+
 
   // ── Stealth toggle ────────────────────────────────────────────────────────
-  let stealthOn = true;
+  let stealthOn = false;
   btnStealth && btnStealth.classList.toggle('active', stealthOn);
   btnStealth && btnStealth.addEventListener('click', () => window.electronAPI.toggleStealth());
+
   window.electronAPI.onStealthChanged((isOn) => {
     stealthOn = isOn;
     btnStealth && btnStealth.classList.toggle('active', stealthOn);

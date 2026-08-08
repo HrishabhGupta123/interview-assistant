@@ -7,7 +7,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   setOpacity:   (v)   => ipcRenderer.send('set-opacity', v),
   toggleClickThrough:   () => ipcRenderer.send('toggle-click-through'),
   toggleStealth:        () => ipcRenderer.send('toggle-stealth'),
+  reloadGemini:         () => ipcRenderer.send('reload-gemini'),
   setIgnoreMouseEvents: (ignore, forward) => ipcRenderer.send('set-ignore-mouse-events', ignore, forward),
+
   
   toggleGeminiMic:      () => ipcRenderer.send('toggle-gemini-mic'),
 

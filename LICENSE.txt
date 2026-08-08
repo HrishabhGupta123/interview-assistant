@@ -1,0 +1,33 @@
+===============================================================================
+                       INTERVIEW ASSISTANT SOFTWARE LICENSE
+                             & TERMS OF SERVICE (EULA)
+===============================================================================
+
+1. END USER LICENSE AGREEMENT
+By installing, copying, or using Interview Assistant ("Software"), you agree to 
+be bound by the terms of this Agreement. If you do not agree, do not install or 
+use the Software.
+
+2. LICENSE GRANT
+Interview Assistant grants you a personal, non-exclusive, non-transferable 
+license to install and use the Software on any compatible computer devices.
+
+3. PRIVACY & SECURITY
+Interview Assistant does not collect, sell, or transmit any user personal data 
+to external third-party servers. All web communications take place directly between 
+the user's machine and Google Gemini services.
+
+4. SCREEN CAPTURE PROTECTION & STEALTH MODE DISCLOSURE
+The Software includes native OS screen capture protection functionality ("Stealth 
+Mode") to prevent background screen recording tools from capturing the app window. 
+You acknowledge that you are responsible for adhering to all local laws, company 
+policies, and examination guidelines when operating the Software.
+
+5. DISCLAIMER OF WARRANTY
+The Software is provided "AS IS", without warranty of any kind, express or implied. 
+In no event shall the authors or copyright holders be liable for any claim, 
+damages, or other liability arising from the use of the Software.
+
+===============================================================================
+               Press "I Agree" to accept and continue installation.
+===============================================================================
