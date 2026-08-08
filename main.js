@@ -494,7 +494,7 @@ ipcMain.on('hide-app',             () => mainWindow && mainWindow.hide());
 ipcMain.on('toggle-click-through', toggleClickThrough);
 ipcMain.on('toggle-stealth',       toggleStealth);
 ipcMain.on('set-ignore-mouse-events', (e, ignore, forward) => {
-  if (mainWindow) mainWindow.setIgnoreMouseEvents(ignore, forward);
+  if (mainWindow) mainWindow.setIgnoreMouseEvents(ignore, forward ? { forward: true } : {});
 });
 ipcMain.on('set-opacity',          (e, v) => mainWindow && mainWindow.setOpacity(v));
 

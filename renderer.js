@@ -313,11 +313,20 @@
   });
 
   // When Click-Through mode is ON, ONLY Click-Through button & Close button remain interactive!
+  const activeBtns = [btnClickThru, btnClose].filter(Boolean);
+  activeBtns.forEach(btn => {
+    btn.addEventListener('mouseenter', () => {
+      if (clickThrough) window.electronAPI.setIgnoreMouseEvents(false, true);
+    });
+    btn.addEventListener('mouseleave', () => {
+      if (clickThrough) window.electronAPI.setIgnoreMouseEvents(true, true);
+    });
+  });
+
   let isHoveredOverBtn = false;
 
   function setIgnore(e) {
     if (!clickThrough) return;
-    const activeBtns = [btnClickThru, btnClose].filter(Boolean);
     const hoverEl = document.elementFromPoint(e.clientX, e.clientY);
     const hoveringInteractive = activeBtns.some(btn => btn === hoverEl || btn.contains(hoverEl));
 
